@@ -17,23 +17,23 @@ instructor_openai_client = instructor.patch(openai.Client(
 
 class TimeExtract(BaseModel):
     weeks: str = Field(default="NULL", description="The number of weeks for the event.")
-    month: str = Field(default="NULL", description="The month of the event.")
-    year: str = Field(default="NULL", description="The year of the event.")
+    month: Literal['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec','NULL'] =Field(default="NULL", description="The month of the event.")
+    year: str = Field(default="2024", description="The year of the event if present in text.")
     time: str = Field(default="NULL", description="The time of the event.")
 
 class TaskDetails(BaseModel):
-    day: str = Field(default="NULL", description="The day of the event.")
-    event: str = Field(default="NULL", description="The title or name of the event.")
-    current_day: str = Field(default="NULL", description="The current day mentioned in the conversation.")
-    successive_day: str = Field(default="NULL", description="The successive day mentioned in the conversation.")
-    timeline: TimeExtract = Field(default=None, description="The time-related details of the event.")
+    day: Literal['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday','NULL'] = Field(default="NULL", description="The day of the event if present in the summary.")
+    event: str = Field(default="NULL", description="Title or summary of the event.")
+    current_day: Literal['Yes','No'] = Field(default="No", description="The current day mentioned in the conversation.")
+    successive_day: Literal['Yes','No'] = Field(default="No", description="The successive day mentioned in the conversation.")
+    timeline: TimeExtract = Field(description="The time-related details of the event.")
 
 class MultipleTaskData(BaseModel):
     tasks: List[TaskDetails]
 
 def extract_event_details(conversation_summary: str) -> MultipleTaskData:
     completion = instructor_openai_client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4",
         messages=[
             {"role": "user", "content": f"Please convert the following information into valid JSON representing the event details: {conversation_summary}."}
         ],
@@ -49,8 +49,12 @@ def extract_event_details(conversation_summary: str) -> MultipleTaskData:
 
 # Example usage
 conversation_summary = """
-The hacknight will be conducted in two weeks on April 15th, 2023 at 7:00 PM.
-The company's quarterly meeting is scheduled for May 1st, 2023 at 10:00 AM.
+Had a very hectic day with continuous classes from morning till evening.
+Need to brainstorm ideas on building access Laravel this year 2023.
+Must focus on finishing a project with a friend by this evening to send the mail.
+Need to schedule a meeting with the dentist for next Friday.
+Have to complete assignments for algorithm analysis by next Tuesday.
+Exam starts on Monday.
 """
 
 multiple_task_data = extract_event_details(conversation_summary)
