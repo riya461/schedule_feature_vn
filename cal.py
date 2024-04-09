@@ -11,7 +11,7 @@ from googleapiclient.errors import HttpError
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
 
 
-def main():
+def run(summary, start_time, end_time, description = "Automated by ..."):
   """Shows basic usage of the Google Calendar API.
   Prints the start and name of the next 10 events on the user's calendar.
   """
@@ -68,18 +68,18 @@ def main():
 
     
 
-    d = datetime.datetime.now().date() 
-    print(d)
-    tomorrow = datetime.datetime(d.year, d.month, d.day, 10)+datetime.timedelta(days=1)
-    start = tomorrow.isoformat()
-    end = (tomorrow + datetime.timedelta(hours=1)).isoformat()
+    # d = datetime.datetime.now().date() 
+    # print(d)
+    # tomorrow = datetime.datetime(d.year, d.month, d.day, 10)+datetime.timedelta(days=1)
+    # start = tomorrow.isoformat()
+    # end = (tomorrow + datetime.timedelta(hours=1)).isoformat()
 
     event_result = service.events().insert(calendarId='primary',
         body={
-            "summary": 'Automating calendar',
-            "description": 'This is a tutorial example of automating google calendar with python',
-            "start": {"dateTime": start, "timeZone": 'Asia/Kolkata'},
-            "end": {"dateTime": end, "timeZone": 'Asia/Kolkata'},
+            "summary": summary,
+            "description":description,
+            "start": {"dateTime": start_time, "timeZone": 'Asia/Kolkata'},
+            "end": {"dateTime": end_time, "timeZone": 'Asia/Kolkata'},
         }
     ).execute()
 
@@ -98,4 +98,4 @@ def main():
 
 
 if __name__ == "__main__":
-  main()
+  run()
