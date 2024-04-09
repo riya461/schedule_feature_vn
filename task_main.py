@@ -5,6 +5,7 @@ from typing import List, Literal
 import json
 import os
 from dotenv import load_dotenv, find_dotenv
+from cal import run
 
 load_dotenv(find_dotenv())
 api_key = os.getenv("OPENAI_API_KEY")
@@ -57,9 +58,16 @@ Have to complete assignments for algorithm analysis by next Tuesday.
 Exam starts on Monday.
 """
 
+
 multiple_task_data = extract_event_details(conversation_summary)
 
 if multiple_task_data:
     print(json.dumps(multiple_task_data.dict(), indent=2))
+    dicti = multiple_task_data.dict()["tasks"]
+    print(dicti)
+    print(len(dicti))
+    for i in range(0, len(dicti)):
+        
+        run(summary=dicti[i]["events"], start_time= start_time, end_time= end_time)
 else:
     print("Failed to extract event details.") 
