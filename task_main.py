@@ -6,6 +6,7 @@ import json
 import os
 from dotenv import load_dotenv, find_dotenv
 from cal import run
+from datetime import date
 
 load_dotenv(find_dotenv())
 api_key = os.getenv("OPENAI_API_KEY")
@@ -17,10 +18,14 @@ instructor_openai_client = instructor.patch(openai.Client(
 ))
 
 class TimeExtract(BaseModel):
-    weeks: str = Field(default="NULL", description="The number of weeks for the event.")
-    month: Literal['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec','NULL'] =Field(default="NULL", description="The month of the event.")
-    year: str = Field(default="2024", description="The year of the event if present in text.")
-    time: str = Field(default="NULL", description="The time of the event.")
+    # weeks: str = Field(default="NULL", description="The number of weeks for the event.")
+    # month: Literal['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec','NULL'] =Field(default="NULL", description="The month of the event.")
+    # year: str = Field(default="2024", description="The year of the event if present in text.")
+    # time: str = Field(default="NULL", description="The time of the event.")
+    date : str = Field(default="NULL", description=f"The date of the event if present in the text in %H-%M-%Y format. It should be derived from prases like 'next Monday', 'this Friday', etc. Current date is {date.today()}.")
+    start_time: str = Field(default="NULL", description= f"The start time of the event if present. Current time is {date.now().strf('%H-%M-%S')}")
+    end_time: str = Field(default="NULL", description="The end time of the event.")
+
 
 class TaskDetails(BaseModel):
     day: Literal['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday','NULL'] = Field(default="NULL", description="The day of the event if present in the summary.")
@@ -67,7 +72,6 @@ if multiple_task_data:
     print(dicti)
     print(len(dicti))
     for i in range(0, len(dicti)):
-        
         run(summary=dicti[i]["events"], start_time= start_time, end_time= end_time)
 else:
     print("Failed to extract event details.") 
