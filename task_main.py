@@ -6,8 +6,11 @@ import json
 import os
 from dotenv import load_dotenv, find_dotenv
 from cal import run
-from datetime import date
+from datetime import date,datetime
 
+today = date.today()
+now = datetime.now()
+current_time = now.strftime("%H:%M:%S")
 load_dotenv(find_dotenv())
 api_key = os.getenv("OPENAI_API_KEY")
 
@@ -22,8 +25,8 @@ class TimeExtract(BaseModel):
     # month: Literal['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec','NULL'] =Field(default="NULL", description="The month of the event.")
     # year: str = Field(default="2024", description="The year of the event if present in text.")
     # time: str = Field(default="NULL", description="The time of the event.")
-    date : str = Field(default="NULL", description=f"The date of the event if present in the text in %H-%M-%Y format. It should be derived from prases like 'next Monday', 'this Friday', etc. Current date is {date.today()}.")
-    start_time: str = Field(default="NULL", description= f"The start time of the event if present. Current time is {date.now().strf('%H-%M-%S')}")
+    date : str = Field(default=f"{today}", description= f"The date of the event if present in the text.  It should be derived from phrases like 'next Monday', 'this Friday', etc. Current date is {today}. Return in DD-MM-YY format.")
+    start_time: str = Field(default=f"{current_time}", description= f"The start time of the event if present. Current time is {current_time}")
     end_time: str = Field(default="NULL", description="The end time of the event.")
 
 
@@ -39,7 +42,7 @@ class MultipleTaskData(BaseModel):
 
 def extract_event_details(conversation_summary: str) -> MultipleTaskData:
     completion = instructor_openai_client.chat.completions.create(
-        model="gpt-4",
+        model="gpt-3.5-turbo",
         messages=[
             {"role": "user", "content": f"Please convert the following information into valid JSON representing the event details: {conversation_summary}."}
         ],
@@ -55,14 +58,9 @@ def extract_event_details(conversation_summary: str) -> MultipleTaskData:
 
 # Example usage
 conversation_summary = """
-Had a very hectic day with continuous classes from morning till evening.
-Need to brainstorm ideas on building access Laravel this year 2023.
-Must focus on finishing a project with a friend by this evening to send the mail.
-Need to schedule a meeting with the dentist for next Friday.
-Have to complete assignments for algorithm analysis by next Tuesday.
-Exam starts on Monday.
-"""
+A meeting is to be held on Monday at 10:00 AM. The meeting will be about the new project.
 
+"""
 
 multiple_task_data = extract_event_details(conversation_summary)
 
