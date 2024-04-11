@@ -44,7 +44,7 @@ class MultipleTaskData(BaseModel):
 
 def extract_event_details(conversation_summary: str) -> MultipleTaskData:
     completion = instructor_openai_client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4",
         messages=[
             {"role": "user", "content": f"Please convert the following information into valid JSON representing the event details: {conversation_summary} specifically for assigning each task to google calender api."}
         ],
@@ -72,17 +72,17 @@ Exam starts on Monday.
 """
 
 if "evening" in conversation_summary.lower():
-    conversation_summary = conversation_summary.replace("evening", "by 4:00 PM")
+    conversation_summary = conversation_summary.replace("evening", "by 4:00:00 PM")
 if "today" in conversation_summary:
     conversation_summary = conversation_summary.replace("today", today)
 if "tomorrow" in conversation_summary:
     conversation_summary = conversation_summary.replace("tomorrow", today + timedelta(days=1))
 
 if "morning" in conversation_summary.lower():
-    conversation_summary = conversation_summary.replace("morning", "by 8:00 AM")
+    conversation_summary = conversation_summary.replace("morning", "by 8:00:00 AM")
 
 if "noon" in conversation_summary.lower():
-    conversation_summary = conversation_summary.replace("noon", "by 12:00 PM")
+    conversation_summary = conversation_summary.replace("noon", "by 12:00:00 PM")
 
 multiple_task_data = extract_event_details(conversation_summary)
 
