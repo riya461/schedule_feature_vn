@@ -60,7 +60,7 @@ def extract_event_details(conversation_summary: str) -> MultipleTaskData:
 conversation_summary = """
 A meeting is to be held on Monday at 10:00 AM. The meeting will be about the new project.
 There's a project deadline with a friend by this evening, requiring immediate attention to send out an email.
-Furthermore, a dentist appointment needs scheduling for the upcoming Friday.
+Furthermore, a dentist appointment needs scheduling for the this Friday.
 Amid this, there's also a pressing task to complete algorithm analysis assignments by next Tuesday, ahead of an exam scheduled for Monday.
 """
 
@@ -111,8 +111,32 @@ if multiple_task_data:
                 datetime.strptime(task["timeline"]["start_time"], "%H:%M:%S")
                 + timedelta(hours=1)
             ).strftime("%H:%M:%S")
-        start_time = task["timeline"]["start_time"]
-        end_time = task["timeline"]["end_time"]
+        date = (task["timeline"]["date"])
+        print(date)
+        print(task["event"])
+        print(task["timeline"]["start_time"])
+        print(task["timeline"]["end_time"])
+        parsed_date = datetime.fromisoformat(date)
+
+        start_time = (task["timeline"]["start_time"])
+        end_time = (task["timeline"]["end_time"])
+
+        parsed_start = datetime.strptime(start_time, "%H:%M:%S")
+
+        # Combine the time and date
+        combined_datetime_start = datetime(parsed_date.year, parsed_date.month, parsed_date.day, parsed_start.hour, parsed_start.minute, parsed_start.second)
+
+        # Convert to ISO format
+        start_time = combined_datetime_start.isoformat()
+
+        parsed_end = datetime.strptime(end_time, "%H:%M:%S")
+
+        # Combine the time and date
+        combined_datetime_end = datetime(parsed_date.year, parsed_date.month, parsed_date.day, parsed_end.hour, parsed_end.minute, parsed_end.second)
+
+        # Convert to ISO format
+        end_time = combined_datetime_end.isoformat()
+
         run(summary=task["event"], start_time=start_time, end_time=end_time)
 else:
     print("Failed to extract event details.")
