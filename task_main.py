@@ -64,7 +64,7 @@ Furthermore, a dentist appointment needs scheduling for the this Friday.
 Amid this, there's also a pressing task to complete algorithm analysis assignments by next Tuesday, ahead of an exam scheduled for Monday.
 """
 
-if "by this evening" or "by evening" or "today evening" in conversation_summary:
+if "by this evening" or "by evening" or "today evening" in conversation_summary.lower():
     conversation_summary = conversation_summary.replace("by this evening", "by 4:00 PM")
     conversation_summary = conversation_summary.replace("by evening", "by 4:00 PM")
     conversation_summary = conversation_summary.replace("today evening", "by 4:00 PM")
@@ -73,12 +73,12 @@ if "today" in conversation_summary:
 if "tomorrow" in conversation_summary:
     conversation_summary = conversation_summary.replace("tomorrow", today + timedelta(days=1))
 
-if "by this morning" or "by morning" or "today morning" in conversation_summary:
+if "by this morning" or "by morning" or "today morning" in conversation_summary.lower():
     conversation_summary = conversation_summary.replace("by this morning", "by 8:00 AM")
     conversation_summary = conversation_summary.replace("by morning", "by 8:00 AM")
     conversation_summary = conversation_summary.replace("today morning", "by 8:00 AM")
 
-if "by this noon" or "by noon" or "today noon" in conversation_summary:
+if "by this noon" or "by noon" or "today noon" in conversation_summary.lower():
     conversation_summary = conversation_summary.replace("by this noon", "by 12:00 PM")
     conversation_summary = conversation_summary.replace("by noon", "by 12:00 PM")
     conversation_summary = conversation_summary.replace("today noon", "by 12:00 PM")
