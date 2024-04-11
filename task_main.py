@@ -57,32 +57,6 @@ def extract_event_details(conversation_summary: str) -> MultipleTaskData:
         return None
 
 # Example usage
-conversation_summary = """
-A meeting is to be held on Monday at 10:00 AM. The meeting will be about the new project.
-There's a project deadline with a friend by this evening, requiring immediate attention to send out an email.
-Furthermore, a dentist appointment needs scheduling for the this Friday.
-Amid this, there's also a pressing task to complete algorithm analysis assignments by next Tuesday, ahead of an exam scheduled for Monday.
-"""
-
-if "by this evening" or "by evening" or "today evening" in conversation_summary.lower():
-    conversation_summary = conversation_summary.replace("by this evening", "by 4:00 PM")
-    conversation_summary = conversation_summary.replace("by evening", "by 4:00 PM")
-    conversation_summary = conversation_summary.replace("today evening", "by 4:00 PM")
-if "today" in conversation_summary:
-    conversation_summary = conversation_summary.replace("today", today)
-if "tomorrow" in conversation_summary:
-    conversation_summary = conversation_summary.replace("tomorrow", today + timedelta(days=1))
-
-if "by this morning" or "by morning" or "today morning" in conversation_summary.lower():
-    conversation_summary = conversation_summary.replace("by this morning", "by 8:00 AM")
-    conversation_summary = conversation_summary.replace("by morning", "by 8:00 AM")
-    conversation_summary = conversation_summary.replace("today morning", "by 8:00 AM")
-
-if "by this noon" or "by noon" or "today noon" in conversation_summary.lower():
-    conversation_summary = conversation_summary.replace("by this noon", "by 12:00 PM")
-    conversation_summary = conversation_summary.replace("by noon", "by 12:00 PM")
-    conversation_summary = conversation_summary.replace("today noon", "by 12:00 PM")
-
 conversation_summary = f"""
 Current details:{time_details}, {date_details}, {day}
 Had a very hectic day with continuous classes from morning till evening.
@@ -92,6 +66,21 @@ Need to schedule a meeting with the dentist for next Friday.
 Have to complete assignments for algorithm analysis by next Tuesday.
 Exam starts on Monday.
 """
+
+if "evening" in conversation_summary.lower():
+    conversation_summary = conversation_summary.replace("evening", "by 4:00 PM")
+if "today" in conversation_summary:
+    conversation_summary = conversation_summary.replace("today", today)
+if "tomorrow" in conversation_summary:
+    conversation_summary = conversation_summary.replace("tomorrow", today + timedelta(days=1))
+
+if "morning" in conversation_summary.lower():
+    conversation_summary = conversation_summary.replace("morning", "by 8:00 AM")
+
+if "noon" in conversation_summary.lower():
+    conversation_summary = conversation_summary.replace("noon", "by 12:00 PM")
+
+
 
 multiple_task_data = extract_event_details(conversation_summary)
 
