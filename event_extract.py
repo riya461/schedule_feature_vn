@@ -1,4 +1,3 @@
-
 import instructor
 from pydantic import BaseModel, Field
 from typing import List
@@ -7,6 +6,7 @@ from dotenv import load_dotenv, find_dotenv
 import os
 from datetime import datetime, date, timedelta
 import json
+from gcalender.cal import run
 
 today = date.today()
 now = datetime.now()
@@ -45,7 +45,7 @@ Exam starts on Monday morning.
 """
 
 if "morning" in summary.lower():
-    summary = summary.replace("morning", "8:00:00")
+    summary = summary.replace("morning", "08:00:00")
 if "noon" in summary.lower():
     summary = summary.replace("noon", "12:00:00")
 if "evening" in summary.lower():
@@ -58,7 +58,7 @@ if "tomorrow" in summary:
 
 
 class TimeV(BaseModel):
-    hours: str = Field(default= str(hour), description="Hour of the event")
+    hours: str = Field(default= str(hour), description="Hour of the event (24-hour format)")
     minutes: str = Field(default= "00", description="Minutes of the event")
     seconds: str = Field(default= "00", description="Seconds of the event")
 
@@ -83,6 +83,19 @@ user_info = client.chat.completions.create(
     response_model=MultipleTaskData,
     messages=[{"role": "user", "content": f"Please convert the following information into valid JSON representing the event details: {summary} specifically for assigning each task to google calender api."}],
 )
-print(json.dumps(user_info.model_dump(), indent=1))
+# print(json.dumps(user_info.model_dump(), indent=1))
 
-# print(user_info)
+tasks = user_info.dict()["tasks"]
+
+for task in tasks:
+    print("Event name:", task["eventname"])
+    event_name = task["eventname"]
+    print("Date:", task["timeline"]["date"])
+    date = task["timeline"]["date"]
+    print("Start time: ",task["timeline"]["start_time"]["hours"]+":"+task["timeline"]["start_time"]["minutes"]+":"+task["timeline"]["start_time"]["seconds"])
+    start_time = task["timeline"]["start_time"]["hours"]+":"+task["timeline"]["start_time"]["minutes"]+":"+task["timeline"]["start_time"]["seconds"]
+    print("End time: ",task["timeline"]["end_time"]["hours"]+":"+task["timeline"]["end_time"]["minutes"]+":"+task["timeline"]["end_time"]["seconds"])
+    end_time = task["timeline"]["end_time"]["hours"]+":"+task["timeline"]["end_time"]["minutes"]+":"+task["timeline"]["end_time"]["seconds"]
+    print("\n")
+    
+    run(summary=event_name, start_time=f"{date}T{start_time}", end_time=f"{date}T{end_time}", description="Automated by ...")
