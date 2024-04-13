@@ -82,7 +82,7 @@ Exam starts on Monday.
 """
 
 if "evening" in conversation_summary.lower():
-    conversation_summary = conversation_summary.replace("evening", "by 16:00:00")
+    conversation_summary = conversation_summary.replace("evening", "16:00:00")
 if "today" in conversation_summary:
     conversation_summary = conversation_summary.replace("today", today)
 if "tomorrow" in conversation_summary:
@@ -90,10 +90,10 @@ if "tomorrow" in conversation_summary:
     conversation_summary = conversation_summary.replace("tomorrow", tmmr )
 
 if "morning" in conversation_summary.lower():
-    conversation_summary = conversation_summary.replace("morning", "by 8:00:00")
+    conversation_summary = conversation_summary.replace("morning", "8:00:00")
 
 if "noon" in conversation_summary.lower():
-    conversation_summary = conversation_summary.replace("noon", "by 12:00:00")
+    conversation_summary = conversation_summary.replace("noon", "12:00:00")
 
 multiple_task_data = extract_event_details(conversation_summary)
 
