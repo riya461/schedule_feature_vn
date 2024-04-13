@@ -81,7 +81,7 @@ from openai import OpenAI
 from dotenv import load_dotenv, find_dotenv
 import os
 from datetime import datetime, date, timedelta
-
+import json
 
 today = date.today()
 now = datetime.now()
@@ -158,5 +158,6 @@ user_info = client.chat.completions.create(
     response_model=MultipleTaskData,
     messages=[{"role": "user", "content": f"Please convert the following information into valid JSON representing the event details: {summary} specifically for assigning each task to google calender api."}],
 )
+print(json.dumps(user_info.model_dump(), indent=1))
 
-print(user_info)
+# print(user_info)

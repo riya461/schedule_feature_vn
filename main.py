@@ -14,6 +14,7 @@ instructor_openai_client = instructor.patch(openai.Client(
     api_key=api_key, timeout=20000, max_retries=3
 ))
 
+
 class Symptoms(BaseModel):
     """
         Represents the symptoms of a patient.
