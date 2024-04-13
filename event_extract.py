@@ -16,10 +16,6 @@ time_details = f"{hour}:00:00"
 print("Today's date:", today)   
 print("Current time:", time_details)
 
-# Define your desired output structure
-class UserInfo(BaseModel):
-    name: str
-    age: int
 
 
 # Load your OpenAI API key from a .env file
