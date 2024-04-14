@@ -102,9 +102,12 @@ def main():
     I have to complete the project by next Tuesday.
     Exam starts on Monday morning.
     """)
-
+    if "load_state" not in st.session_state:
+        st.session_state.load_state=False
+        
     # Create a submit button
-    if st.button("Submit", key="submit_button"):
+    if st.button("Submit", key="submit_button") or st.session_state.load_state:
+        st.session_state.load_state=True
         with st.spinner("Processing data..."):
             result = process_data(summary)
 
