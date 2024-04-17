@@ -10,8 +10,10 @@ from gcalender.cal import run
 
 today = date.today()
 now = datetime.now()
-hour = int(now.strftime("%H"))+1
-time_details = f"{hour}:00:00"
+
+hour = (now.hour + 1) % 24  # Using modulo operator to ensure hour stays within 0-23 range
+time_details = f"{hour:02}:00:00"  # Ensuring two-digit format for hour
+print(time_details)
 
 print("Today's date:", today)   
 print("Current time:", time_details)
@@ -58,12 +60,12 @@ if "tomorrow" in summary:
 
 
 class TimeV(BaseModel):
-    hours: str = Field(default= str(hour), description="Hour of the event (24-hour format)")
-    minutes: str = Field(default= "00", description="Minutes of the event")
-    seconds: str = Field(default= "00", description="Seconds of the event")
+    hours: str = Field(default= str(hour), description="Hour of the event (24-hour format) 00,01,02,03,04,05,06,07,08,09,10,11,12,13,14,15,16,17,18,19,20,21,22,23")
+    minutes: str = Field(default= "00", description="Minutes of the event round to nearest 5 multiple")
+    seconds: str = Field(default= "00", description="Return 00")
 
 
-default_time = TimeV(hours= str(hour), minutes="00", seconds="00")
+default_time = TimeV(hours= f"{hour:02}", minutes="00", seconds="00")
 
 class TimeDetails(BaseModel):
     date: str = Field(default= today, description="Date of the event") 
@@ -88,6 +90,14 @@ user_info = client.chat.completions.create(
 tasks = user_info.dict()["tasks"]
 
 for task in tasks:
+    if task["timeline"]["start_time"]["hours"] == task["timeline"]["end_time"]["hours"] and task["timeline"]["start_time"]["minutes"] == task["timeline"]["end_time"]["minutes"] :
+        task["timeline"]["end_time"]["minutes"] = "30"
+    if int(task["timeline"]["start_time"]["hours"]) > int(task["timeline"]["end_time"]["hours"]):
+        task["timeline"]["end_time"]["hours"] = str(int(task["timeline"]["start_time"]["hours"]))
+        task["timeline"]["end_time"]["minutes"] = "30"
+    if int(task["timeline"]["start_time"]["hours"]) == int(task["timeline"]["end_time"]["hours"]) and int(task["timeline"]["start_time"]["minutes"]) > int(task["timeline"]["end_time"]["minutes"]):
+        task["timeline"]["start_time"]["minutes"] = "00"
+        task["timeline"]["end_time"]["minutes"] = "30"
     print("Event name:", task["eventname"])
     event_name = task["eventname"]
     print("Date:", task["timeline"]["date"])
