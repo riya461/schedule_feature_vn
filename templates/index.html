@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Extraction</title>
+</head>
+<body>
+    <h1>Event Extraction</h1>
+    <form action="/" method="post">
+        <label for="text">Write your summarised text here:</label><br>
+        <textarea id="text" name="text" rows="15" cols="50" onkeyup='saveValue(this)' draggable="false"></textarea><br><br>
+        <input type="submit" value="Submit">
+    </form>
+
+    {% if results %}
+         
+    <h2>Results</h2>
+    <table>
+        <tr>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+        </tr>
+        {% for result in results %}
+        <tr>
+           
+            <td>{{ result.eventname }}</td>
+            <td>{{ result.timeline.date }}</td>
+            <td>{{ result.timeline.start_time.hours }}:{{ result.timeline.start_time.minutes }}:{{ result.timeline.start_time.seconds }}</td>
+            <td>{{ result.timeline.end_time.hours }}:{{ result.timeline.end_time.minutes }}:{{ result.timeline.end_time.seconds }}</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+    
+    {% endif %}
+    <script>document.getElementById("thetext").value = getSavedValue("thetext");
+        function saveValue(e){
+                  var id = e.id;  
+                  var val = e.value;  
+                  localStorage.setItem(id, val);
+              }
+             function getSavedValue  (v){
+                  if (!localStorage.getItem(v)) {
+                      return "";
+                  }
+                  return localStorage.getItem(v);
+              }</script>
+</body>
+</html>
