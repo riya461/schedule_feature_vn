@@ -54,7 +54,7 @@ if "tomorrow" in summary:
 
 
 class TimeV(BaseModel):
-    hours: str = Field(default= str(hour), description="Hour of the event (24-hour format)")
+    hours: str = Field(fault= str(hour), description="Hour of the event (24-hour format)")
     minutes: str = Field(default= "00", description="Minutes of the event")
     seconds: str = Field(default= "00", description="Seconds of the event")
 
