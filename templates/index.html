@@ -4,49 +4,113 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Extraction</title>
+    <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
-    <h1>Event Extraction</h1>
-    <form action="/" method="post">
-        <label for="text">Write your summarised text here:</label><br>
-        <textarea id="text" name="text" rows="15" cols="50" onkeyup='saveValue(this)' draggable="false"></textarea><br><br>
-        <input type="submit" value="Submit">
-    </form>
+    <div class="container">
+        <h1>Event Extraction</h1>
+        <form id="eventForm" action="/" method="post">
+            <label for="text">Write your summarised text here:</label><br>
+            <textarea id="text" name="text" rows="3" onkeyup='saveValue(this); autoGrow(this);' draggable="false"></textarea><br><br>
+            <input type="submit" value="Submit">    
+            <button id="recordButton" onclick="toggleRecording(event)">Record</button>
+        </form>
+        {% if results %}
+        <h2>Do you want to schedule these events</h2>
+        <div class="event-cards-container">
+            <div class="event-cards">
+                {% for result in results %}
+                <div class="event-card">
+                    <div class="event-details">
+                        <h3>{{ result.eventname }}</h3>
+                        <p>Date: {{ result.timeline.date }}</p>
+                        <p>Start Time: {{ result.timeline.start_time.hours }}:{{ result.timeline.start_time.minutes }}:{{ result.timeline.start_time.seconds }}</p>
+                        <p>End Time: {{ result.timeline.end_time.hours }}:{{ result.timeline.end_time.minutes }}:{{ result.timeline.end_time.seconds }}</p>
+                    </div>
+                    <div style="display: flex; flex-direction: row; justify-content: center;" class="event-actions">
+                        <button class="add-to-calendar">Add to Calendar</button>
+                        <button class="close-event">x</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
 
-    {% if results %}
-         
-    <h2>Results</h2>
-    <table>
-        <tr>
-            <th>Description</th>
-            <th>Date</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-        </tr>
-        {% for result in results %}
-        <tr>
-           
-            <td>{{ result.eventname }}</td>
-            <td>{{ result.timeline.date }}</td>
-            <td>{{ result.timeline.start_time.hours }}:{{ result.timeline.start_time.minutes }}:{{ result.timeline.start_time.seconds }}</td>
-            <td>{{ result.timeline.end_time.hours }}:{{ result.timeline.end_time.minutes }}:{{ result.timeline.end_time.seconds }}</td>
-        </tr>
-        {% endfor %}
+    <script>
+        document.getElementById("text").value = getSavedValue("text");
+        let countdownInterval;
 
-    </table>
-    
-    {% endif %}
-    <script>document.getElementById("thetext").value = getSavedValue("thetext");
-        function saveValue(e){
-                  var id = e.id;  
-                  var val = e.value;  
-                  localStorage.setItem(id, val);
-              }
-             function getSavedValue  (v){
-                  if (!localStorage.getItem(v)) {
-                      return "";
-                  }
-                  return localStorage.getItem(v);
-              }</script>
+        function saveValue(e) {
+            var id = e.id;
+            var val = e.value;
+            localStorage.setItem(id, val);
+        }
+
+        function getSavedValue(v) {
+            if (!localStorage.getItem(v)) {
+                return "";
+            }
+            return localStorage.getItem(v);
+        }
+
+        function autoGrow(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+
+        function toggleRecording(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const recordButton = document.getElementById("recordButton");
+
+            if (recordButton.textContent === "Record") {
+                // Start recording
+                startRecording();
+                recordButton.textContent = "Stop";
+            } else {
+                // Stop recording
+                stopRecording();
+                recordButton.textContent = "Record";
+            }
+        }
+
+        function startRecording() {
+            const timerDisplay = document.createElement('span');
+            timerDisplay.id = 'timerDisplay';
+            timerDisplay.textContent = 'Recording: 30s';
+            document.querySelector('#eventForm').appendChild(timerDisplay);
+
+            let secondsRemaining = 30;
+            countdownInterval = setInterval(() => {
+                secondsRemaining--;
+                if (secondsRemaining >= 0) {
+                    timerDisplay.textContent = `Recording: ${secondsRemaining}s`;
+                } else {
+                    stopRecording();
+                }
+            }, 1000);
+        }
+
+        function stopRecording() {
+            clearInterval(countdownInterval);
+            const timerDisplay = document.getElementById('timerDisplay');
+            if (timerDisplay) {
+                timerDisplay.parentNode.removeChild(timerDisplay);
+            }
+        }
+
+        // Add event listener for close buttons
+        const closeButtons = document.querySelectorAll('.close-event');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', removeEventCard);
+        });
+
+        function removeEventCard(event) {
+            const eventCard = event.target.closest('.event-card');
+            eventCard.remove();
+        }
+    </script>
 </body>
 </html>
